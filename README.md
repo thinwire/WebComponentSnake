@@ -27,5 +27,5 @@ The page needs to be reloaded to restart the game. The aim of this exercise was 
 ## Acnowledgements 
 
 The favicon I'm using is from [IconArchive](http://www.iconarchive.com/show/animal-icons-by-martin-berube/snake-icon.html) - it is licensed as freeware.
-The WebFont is from Google's Web Fonts repository, and it's called [Play](https://www.google.com/fonts/specimen/Play), and is licensed under the SIL Open Font License.
+The WebFont is from Google's Web Fonts repository. It's called [Play](https://www.google.com/fonts/specimen/Play) and is licensed under the SIL Open Font License.
 
