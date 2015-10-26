@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<!-- Add a nice font -->
+		<link href='https://fonts.googleapis.com/css?family=Play' rel='stylesheet' type='text/css'>
+	
+		<!-- Favicon declaration -->
+		<link rel="icon" href="favicon.ico" />
+	
+		<script src="components/webcomponents.min.js"></script>
+
+		<!-- Game components -->
+		<link rel="import" href="components/snake/snake.html">
+		<link rel="import" href="components/score/score.html">
+		<link rel="import" href="components/starfield/starfield.html">
+		
+		<!-- Layout and styling -->
+		<link rel="stylesheet" href="snake.css">
+		
+		<!-- Page title -->
+		<title>Epic WebComponents Snake Game 2015</title>
+	</head>
+	<body>
+
+		<!-- Add the title -->
+		<h1>Epic Mega Cyber Snake 2015</h1>
+		
+		<!-- Add game components -->
+		<div id="game">
+			<x-starfield>WTF no starfield :(</x-starfield><br>
+			<x-snake>WTF no snake :(</x-snake><br>
+		</div>
+		
+		<x-score>WTF no score :(</x-score><br>
+			
+		<!-- Add and run our glue script -->
+		<script src="main.js"></script>
+		
+	</body>
+</html>

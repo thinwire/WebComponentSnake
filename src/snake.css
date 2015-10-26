@@ -1,0 +1,49 @@
+/*
+ * CSS rules for our little snake game
+ */
+
+body {
+	text-align: center;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	background-color: #333;
+}
+
+h1 {
+	font-family: 'Play', sans-serif;
+	color: white;
+	text-shadow: 0px 0px 15px #000fff;
+	text-align: center;
+}
+
+#game {
+	display: table;
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	height: 500px;
+	width: 500px;
+}
+
+x-snake {
+	display: table-cell;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	text-shadow: 0px 0px 15px #000fff;
+}
+
+x-starfield {
+	display: table-cell;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	text-shadow: 0px 0px 15px #000fff;
+}
+
+sub {
+	margin-top: auto;
+	margin-bottom: 5px;
+}
