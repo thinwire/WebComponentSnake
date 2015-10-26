@@ -5,7 +5,7 @@
 This is a personal project that I've used for teaching myself how to build, access and interconnect Web Components using the Polymer framework.
 This project just happens to be a snake game, since it's a problem of a very limited scope, and thus easy for me to get my head around. On the other hand, it provides good opportunities for studying web components, in that each part of the problem is cleanly separable and communication between parts can be externalized.
 
-For you, as an anonymous end user, this can serve as an example of how to create a web component
+For you, as an anonymous end user, this can serve as an example of how to create a web component and/or how to set up a game loop in HTML5.
 
 ## Requirements
 
