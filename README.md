@@ -18,7 +18,7 @@ Compilation uses GNU Make and the [TypeScript](http://www.typescriptlang.org/) c
 
 ## Try it
 
-Play the compiled game [here](http://uncoolbens.org/snake/)
+Play the compiled game [here](http://uncoolbens.org/snake2/)
 
 ## Limitations
 
