@@ -7,9 +7,22 @@
     starfield.speed = 0.25;
     
     snake.addEventListener("score-changed", (e) => {
-        score.value = snake.score;
-        snake.speed -= 1;
-        starfield.speed += 0.2;
+        // Update value directly the score counter
+        // Multiply that by a random value, it looks a bit cooler.
+        score.value = snake.score * 9;
+        
+        // Increase game speed by 10 percent for every bit of score
+        // the player gets.
+        
+        // Recalculate speed for the snake...
+        var d = Math.max(1,snake.speed * .1);
+        snake.speed -= d;
+        
+        // And then again for the starfield.
+        // Actually, make that 1% increase, the stars
+        // get rather fast rather quickly...
+        d = Math.max(0.001,starfield.speed * 0.01);
+        starfield.speed += d;
     });
     
     snake.addEventListener("gameover-changed", (e) => {

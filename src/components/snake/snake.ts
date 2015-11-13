@@ -7,8 +7,6 @@
 
 (function() {
 
-    var _snake = null;
-
     class Snake {
         private game: SnakeGame;
         private tm: number;
@@ -31,7 +29,8 @@
         public start() {
             this.tm = 0;
             this.game.drawLevel();
-            
+
+            // Define our decoupled update loop            
             var update = (t: number) => {
 
                 //
@@ -42,6 +41,9 @@
                 // speed _smaller_ makes the game go _faster_.
                 //
 
+                // Decoupled game logic: the game logic runs on a close
+                // approximation of 'when it should', while the draw loop
+                // runs whenever it can.
                 if (this.tm == 0) {
                     this.tm = t;
                 } else {
@@ -60,17 +62,20 @@
                         this.onScoreChange(l);
                     }
                 }
-                
+
+                // If game over state is triggered, notify the outside                
                 if(this.game.isGameOver()) {
                     if(this.onGameOver != null) {
                         this.onGameOver();
                     }
                 }
                 
+                // Always draw the game level
                 this.game.drawLevel();
                 requestAnimationFrame(update);
             };
 
+            // Run requestAnimationFrame once to bootstrap the main loop
             requestAnimationFrame(update);
         }
     }
@@ -105,22 +110,24 @@
         },
 
         _speedchanged: (newValue: number, oldValue: number): void => {
-            if (_snake != null && oldValue != newValue) {
-                _snake.setSpeed(newValue);
+            if (this._snake != null && oldValue != newValue) {
+                this._snake.setSpeed(newValue);
             }
         },
         
         ready: function() {
             var canvas = this.$.gamecanvas;
-            _snake = new Snake(canvas);
-            _snake.onScoreChange = (score: number) => {
+            this._snake = new Snake(canvas);
+            this._snake.onScoreChange = (score: number) => {
                 this._setScore(score);
             };
-            _snake.onGameOver = () => {
+            this._snake.onGameOver = () => {
                 this._setGameover(true);
             };
-            _snake.start();
-        }
+            this._snake.start();
+        },
+        
+        _snake: null
     });
 
 })();

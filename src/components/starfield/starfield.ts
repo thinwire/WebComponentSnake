@@ -6,8 +6,6 @@
 
 (function() {
 
-    var _starfield = null;
-
     class Star {
         public x: number;
         public y: number;
@@ -129,6 +127,7 @@
         }
 
         public draw(): void {
+            
             var ctx = this.context;
             ctx.fillStyle = "#000";
             ctx.fillRect(0, 0, this.width, this.height);
@@ -138,15 +137,34 @@
             ctx.shadowBlur = 16;
             ctx.fillStyle = "#fff";
 
-            ctx.beginPath();
+            // Calculate total z range
+            var zrange = this.zfar - this.znear;
+            
+            // Define star radius
+            var r = 1.75;
+
             for (var i = 0; i < this.stars.length; ++i) {
+                
                 var s = this.stars[i];
+                
+                // Calculate star X/Y position on screen
                 var x = 250 + (s.x / s.z) * 1.75;
                 var y = 250 + (s.y / s.z) * 1.75;
-                ctx.rect(x - 2, y - 2, 4, 4);
+                
+                // Calculate alpha value based on how far away the
+                // star is. We want the star to be at full brightness
+                // when it's at the near Z plane
+                ctx.globalAlpha = 1.0 - ((s.z - this.znear) / zrange);
+                
+                // Draw and fill a full arc
+                ctx.beginPath();
+                ctx.arc(x - r, y - r, r, 0, 2 * Math.PI, false);
+                ctx.fill();
             }
-            ctx.fill();
+            
+            // Reset drawing context state
             ctx.beginPath();
+            ctx.globalAlpha = 1.0;
         }
     }
 
@@ -187,38 +205,31 @@
             }
         },
 
-        _speedchanged: (newValue: number, oldValue: number): void => {
-            var s = _starfield;
-            if (s != null) {
-                s.setSpeed(newValue);
-            }
+        _speedchanged: function(newValue: number, oldValue: number) {
+            if(this._starfield)
+            this._starfield.setSpeed(newValue);
         },
 
-        _starschanged: (newValue: number, oldValue: number): void => {
-            var s = _starfield;
-            if (s != null) {
-                s.setStarCount(newValue);
-            }
+        _starschanged: function(newValue: number, oldValue: number) {
+            if(this._starfield)
+            this._starfield.setStarCount(newValue);
         },
 
-        _znearchanged: (newValue: number, oldValue: number): void => {
-            var s = _starfield;
-            if (s != null) {
-                s.setZNear(newValue);
-            }
+        _znearchanged: function(newValue: number, oldValue: number) {
+            if(this._starfield)
+            this._starfield.setZNear(newValue);
         },
 
-        _zfarchanged: (newValue: number, oldValue: number): void => {
-            var s = _starfield;
-            if (s != null) {
-                s.setZFar(newValue);
-            }
+        _zfarchanged: function(newValue: number, oldValue: number) {
+            if(this._starfield)
+            this._starfield.setZFar(newValue);
         },
 
         ready: function() {
-            var canvas = this.$.content;
-            _starfield = new Starfield(canvas);
-        }
+            this._starfield = new Starfield(this.$.content);
+        },
+        
+        _starfield: null
     });
 
 })();

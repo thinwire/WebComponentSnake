@@ -224,11 +224,14 @@ namespace game {
             var x = wrap(this.head.getX() + this.dir_x, 0, this.level_w);
             var y = wrap(this.head.getY() + this.dir_y, 0, this.level_h);
 
-            // Check collisions
-            var collision = this.getMask(x, y);
-            
             // Mark old tail value as no longer masked...
             this.setMask(this.tail.getX(), this.tail.getY(), false);
+
+            // Check collisions
+            // We do this after unmasking the old tail in order to support
+            // more Nokia-like snake behavior, allowing you to more tightly
+            // chase and evade your own tail. 
+            var collision = this.getMask(x, y);
             
             // Unlink old tail and make it the new head
             var t = this.tail;
@@ -318,19 +321,19 @@ class SnakeGame {
         window.addEventListener('keydown', (e) => {
             var dx = 0, dy = 0, update = false;
             switch (e.keyCode) {
-                case 37:
+                case 37:        // Left arrow
                     dx = -1;
                     update = true;
                     break;
-                case 39:
+                case 39:        // Right arrow
                     dx = 1;
                     update = true;
                     break;
-                case 38:
+                case 38:        // Up arrow
                     dy = -1;
                     update = true;
                     break;
-                case 40:
+                case 40:        // Down arrow
                     dy = 1;
                     update = true;
                     break;
@@ -359,6 +362,9 @@ class SnakeGame {
         return this.gameOver;
     }
 
+    /**
+     * Game logic update loop
+     */
     public update(): void {
         if (this.gameOver) return;
 
@@ -374,6 +380,12 @@ class SnakeGame {
         if (this.snake.getX() == ax && this.snake.getY() == ay) {
             this.snake.addPart();
 
+            // Randomize Apple position. Note, that the Apple can
+            // occupy any tile, even one currently occupied by the
+            // snake body. This is by design: eliminating this behavior
+            // in a constant-time fashion would require surprisingly
+            // complex code and would make this example a lot harder
+            // to follow.
             ax = (Math.random() * this.levelWidth) | 0;
             ay = (Math.random() * this.levelHeight) | 0;
             this.apple.setPosition(ax, ay);
@@ -382,19 +394,20 @@ class SnakeGame {
         }
     }
 
+    /**
+     * Main game render loop
+     */
     public drawLevel(): void {
         var ctx = this.context;
-        var gridColor = '#555512';
+        var gridColor = '#127912';
         var gridShadowColor = '#999912';
 
-        var snakeBody = '#12cc16';
         var snakeHead = '#12ff16';
         var snakeTail = '#129616';
 
         var apple = '#ff1212';
 
         if (this.gameOver) {
-            snakeBody = '#cc1216';
             snakeHead = '#ff1216';
             snakeTail = '#961216';
         }
@@ -411,6 +424,7 @@ class SnakeGame {
         ctx.clearRect(0, 0, this.levelWidth * this.tileWidth, this.levelHeight * this.tileHeight);
         
         // Draw grid
+        ctx.globalAlpha = 0.2;
         ctx.beginPath();
         ctx.strokeStyle = gridColor;
         ctx.shadowColor = gridShadowColor;
@@ -427,43 +441,112 @@ class SnakeGame {
         ctx.beginPath();
 
         // Draw game objects
+        ctx.globalAlpha = 1.0;
         ctx.globalCompositeOperation = 'lighten';
         
         // Draw apple
         ctx.fillStyle = apple;
-        ctx.shadowColor = '#ff0000';
-        ctx.shadowBlur = 32;
-        this.drawNode(this.apple.getX(), this.apple.getY());
+        this.drawApple(this.apple.getX(), this.apple.getY());
         
         //
         // Draw snake
         //
         
         // First draw snake body
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = snakeBody;
-        ctx.fillStyle = snakeBody;
-        var node = tail.getNext();
-        while (node != head) {
-            this.drawNode(node.getX(), node.getY());
-            node = node.getNext();
-        }
-
+        this.drawSnakeBody(ctx);
+        
         // Then draw the tail
         ctx.shadowBlur = 14;
         ctx.shadowColor = snakeTail;
         ctx.fillStyle = snakeTail;
-        this.drawNode(tail.getX(), tail.getY());
+        this.drawRect(tail.getX(), tail.getY());
 
         // And finally the head
         ctx.shadowBlur = 18;
         ctx.shadowColor = snakeHead;
         ctx.fillStyle = snakeHead;
-        this.drawNode(head.getX(), head.getY());
+        this.drawRect(head.getX(), head.getY());
     }
 
-    private drawNode(x: number, y: number): void {
+    private drawSnakeBody(ctx: CanvasRenderingContext2D) {
+        
+        // This routine draws the entire snake body using a color
+        // cycling effect.
+        
+        var tail = this.snake.getTail();
+        var head = this.snake.getHead();
+        
+        var green_base = 190;        // Base green value
+        var green_variance = 50;     // amount to vary (base +/- this value)
+        var offset = Math.PI * 0.12; // Amount to shift per block, in radians.
+        var i = 0, g, color;         // State variables
+        var time = Date.now();       // Current time to allow for time-based cycling
+        
+        // Set shadow blur value to give the snake a cool glow
+        ctx.shadowBlur = 12;
+        
+        var node = tail.getNext();
+        while (node != head) {
+            
+            // Calculate green color value.
+            // We take the base value and add to that the sine (range +/- 1 based on input)
+            // of the current timestamp, scaled down, and add to that input an offset 
+            // based on how many snake parts we've processed already. To get the final value,
+            // we multiply the sine by the green variance (to get base +/- variance), and
+            // truncate the value to an integer. 
+            g = (green_base + Math.sin(time * -0.01 + offset * i) * green_variance) | 0;
+            
+            // Next, we form a CSS color value string
+            color = 'rgba(10,' + g + ',10,1.0)';
+            
+            // Assign color the the drawing context
+            ctx.shadowColor = color;
+            ctx.fillStyle = color;
+            
+            // Then ask it to draw a rectangle
+            this.drawRect(node.getX(), node.getY());
+            
+            // Advance to the next node
+            node = node.getNext();
+            
+            // Increment counter (we're using this for the effect offset, remember? :))
+            i++;
+        }
+
+    }
+
+    private drawRect(x: number, y: number): void {
         this.context.fillRect(x * this.tileWidth, y * this.tileHeight, this.tileWidth, this.tileHeight);
+    }
+    
+    private drawApple(x: number, y: number): void {
+
+        // Values for finding correct coordinates for apple
+        var w = this.tileWidth;
+        var h = this.tileHeight;
+        var w2 = w * 0.5;
+        var h2 = h * 0.5;
+        
+        // Let's do an effect here too, and have the apple pulse along with the time
+        
+        // We need the time...
+        var time = Date.now();
+        
+        // We need base size values
+        var r_base = w2 * 1.15;
+        var r_variance = w2 * 0.25;
+        
+        // Calculate a new radius 'r'
+        var r = r_base + Math.sin(time * 0.0023) * r_variance;
+        
+        var ctx = this.context;
+        ctx.shadowColor = '#ff0000';
+        ctx.shadowBlur = 32;
+       
+        this.context.beginPath();
+        this.context.arc(x * w + w2, y * h + h2, r, 0, 2 * Math.PI, false);
+        this.context.fill();
+        this.context.beginPath();
     }
 
 };
