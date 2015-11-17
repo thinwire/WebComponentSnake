@@ -22,9 +22,11 @@ Play the compiled game [here](http://uncoolbens.org/snake2/)
 
 ## Limitations
 
-The page needs to be reloaded to restart the game. The aim of this exercise was not to create a game, but to wire up web components in a usable fashion.
+- Apples can appear inside the snake body. This is a feature, not a bug. In order to keep the code clean, I decided to leave out the swath of logic required to decide upon a free slot for the apple in constant time.
+- Keypresses are handled on a last-come, first-serve basis, instead of being buffered. This means that turning tight corners can become tricky. This should be fixed for the next version.
+- The page needs to be reloaded to restart the game.
 
-## Acnowledgements 
+## Acknowledgements 
 
 The favicon I'm using is from [IconArchive](http://www.iconarchive.com/show/animal-icons-by-martin-berube/snake-icon.html) - it is licensed as freeware.
 The WebFont is from Google's Web Fonts repository. It's called [Play](https://www.google.com/fonts/specimen/Play) and is licensed under the SIL Open Font License.
